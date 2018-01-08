@@ -1,0 +1,4 @@
+### Send GET Request
+GET http://localhost:8080/userData?emailAddress=jkh@ma.il
+
+###

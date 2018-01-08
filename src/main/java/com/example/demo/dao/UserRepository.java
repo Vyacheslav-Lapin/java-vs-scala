@@ -32,6 +32,6 @@ public class UserRepository {
 
     @SneakyThrows
     public User byEmailAddress(String emailAddress) {
-        return userMap.get(URLDecoder.decode(emailAddress, "UTF-8"));
+        return userMap.get(emailAddress);
     }
 }

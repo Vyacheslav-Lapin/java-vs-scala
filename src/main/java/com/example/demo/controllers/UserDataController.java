@@ -1,13 +1,14 @@
 package com.example.demo.controllers;
 
-import com.example.demo.dao.EmailNotRegisteredException;
 import com.example.demo.dao.NoTicketsForUserException;
 import com.example.demo.dao.TicketRepository;
-import com.example.demo.dao.UserRepository;
 import com.example.demo.model.Bonus;
+import com.example.demo.model.Ticket;
 import com.example.demo.model.User;
 import com.example.demo.services.MarketingService;
-import lombok.Getter;
+import com.example.demo.services.UserService;
+import io.vavr.control.Either;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
@@ -17,17 +18,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
-
-import static java.net.URLDecoder.decode;
-import static lombok.AccessLevel.NONE;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
-@Value
-@Getter(NONE)
+@AllArgsConstructor
 @RestController
 public class UserDataController {
 
-    private UserRepository userRepository;
+    private UserService userService;
 
     private TicketRepository ticketRepository;
 
@@ -37,14 +35,21 @@ public class UserDataController {
     @GetMapping("/userData")
     public UserData userData(@RequestParam("emailAddress") String emailAddress) {
 
-        val user = userRepository.byEmailAddress(decode(emailAddress, "UTF-8"))
-                .orElseThrow(() -> new EmailNotRegisteredException(emailAddress));
+        val eitherUserCompletableFuture = userService.byEmailAddress(emailAddress);
 
-        val tickets = ticketRepository.byUserId(user.getId());
-        if (tickets.isEmpty())
-            throw new NoTicketsForUserException(user);
+        CompletableFuture<Either<NoTicketsForUserException, Collection<Ticket>>> tickets = eitherUserCompletableFuture
+                .thenApply(eitherUser -> eitherUser.map(User::getId))
+                .thenCompose(eitherUserId -> eitherUserId.isLeft() ?
+                        CompletableFuture.supplyAsync(() ->
+                                Either.left(new NoTicketsForUserException(eitherUserId.getLeft()))) :
+                        ticketRepository.byUserId(eitherUserId.get()));
 
-        return new UserData(user, marketingService.getBonuses(tickets));
+        val user = eitherUserCompletableFuture.get();
+        if (user.isLeft())
+            throw user.getLeft();
+
+        val bonuses = marketingService.getBonuses(tickets.get().get());
+        return new UserData(user.get(), bonuses.get());
     }
 
     @Value

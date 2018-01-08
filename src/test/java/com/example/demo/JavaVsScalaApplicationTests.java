@@ -18,7 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class JavaVsScalaApplicationTests {
 
-    private static final String JSON = "{\n" +
+    //language=JSON
+    private static final String CORRECT_JSON = "{\n" +
                     "  \"user\": {\n" +
                     "    \"id\": 1,\n" +
                     "    \"firstName\": \"Vasya\",\n" +
@@ -42,15 +43,33 @@ public class JavaVsScalaApplicationTests {
                     "  ]\n" +
                     "}";
 
+    //language=JSON
+    private final String ERROR_JSON = "{\n" +
+            "  \"timestamp\": \"2018-01-08T16:23:56.112+0000\",\n" +
+            "  \"status\": 404,\n" +
+            "  \"error\": \"Not Found\",\n" +
+            "  \"message\": \"User with this email is not registered in the system!\",\n" +
+            "  \"path\": \"/userData\"\n" +
+            "}";
+
     @Autowired
     private MockMvc mvc;
 
     @Test
-    public void getHello() throws Exception {
+    public void getCorrectAnswer() throws Exception {
         mvc.perform(
                 MockMvcRequestBuilders.get("/userData?emailAddress=Vasya.Pupkin%40ma.il")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(JSON));
+                .andExpect(content().json(CORRECT_JSON));
+    }
+
+    @Test
+    public void getErrorAnswer() throws Exception {
+        mvc.perform(
+                MockMvcRequestBuilders.get("/userData?emailAddress=noname%40ma.il")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+//                .andExpect(content().json(ERROR_JSON));
     }
 }

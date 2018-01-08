@@ -1,4 +1,7 @@
-### Send GET Request
+### Send correct GET Request
 GET http://localhost:8080/userData?emailAddress=Vasya.Pupkin@ma.il
+
+### Send correct GET Request
+GET http://localhost:8080/userData?emailAddress=noname@ma.il
 
 ###

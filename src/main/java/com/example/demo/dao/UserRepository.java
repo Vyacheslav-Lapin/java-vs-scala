@@ -1,13 +1,14 @@
 package com.example.demo.dao;
 
 import com.example.demo.model.User;
-import lombok.SneakyThrows;
+import io.vavr.control.Either;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static java.time.Month.NOVEMBER;
 
@@ -30,8 +31,12 @@ public class UserRepository {
             userMap.put(user.getEmailAddress(), user);
     }
 
-    @SneakyThrows
-    public Optional<User> byEmailAddress(String emailAddress) {
-        return Optional.ofNullable(userMap.get(emailAddress));
+    public CompletableFuture<Either<EmailNotRegisteredException, User>> byEmailAddress(String emailAddress) {
+        return CompletableFuture.supplyAsync(() -> userMap.get(emailAddress))
+                .thenApply(Optional::ofNullable)
+                .thenApply(optionalUser -> optionalUser
+                        .map(Either::<EmailNotRegisteredException, User>right)
+                        .orElse(Either.<EmailNotRegisteredException, User>left(
+                                new EmailNotRegisteredException(emailAddress))));
     }
 }

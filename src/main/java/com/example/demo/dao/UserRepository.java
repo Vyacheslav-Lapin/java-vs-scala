@@ -4,10 +4,10 @@ import com.example.demo.model.User;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Repository;
 
-import java.net.URLDecoder;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.time.Month.NOVEMBER;
 
@@ -31,7 +31,7 @@ public class UserRepository {
     }
 
     @SneakyThrows
-    public User byEmailAddress(String emailAddress) {
-        return userMap.get(emailAddress);
+    public Optional<User> byEmailAddress(String emailAddress) {
+        return Optional.ofNullable(userMap.get(emailAddress));
     }
 }

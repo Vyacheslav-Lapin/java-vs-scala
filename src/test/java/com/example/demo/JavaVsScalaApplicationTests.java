@@ -18,14 +18,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class JavaVsScalaApplicationTests {
 
-    private static final String JSON =
-            "{\n" +
+    private static final String JSON = "{\n" +
                     "  \"user\": {\n" +
                     "    \"id\": 1,\n" +
                     "    \"firstName\": \"Vasya\",\n" +
                     "    \"lastName\": \"Pupkin\",\n" +
                     "    \"dateOfBirth\": \"1985-11-24\",\n" +
-                    "    \"emailAddress\": \"jkh%40ma.il\"\n" +
+                    "    \"emailAddress\": \"Vasya.Pupkin@ma.il\"\n" +
                     "  },\n" +
                     "  \"bonuses\": [\n" +
                     "    {\n" +
@@ -49,7 +48,7 @@ public class JavaVsScalaApplicationTests {
     @Test
     public void getHello() throws Exception {
         mvc.perform(
-                MockMvcRequestBuilders.get("/userData?emailAddress=jkh%40ma.il")
+                MockMvcRequestBuilders.get("/userData?emailAddress=Vasya.Pupkin%40ma.il")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(JSON));

@@ -9,11 +9,11 @@ import java.util.Collection;
 
 @Service
 public class MarketingService {
-    public Collection<Bonus> getBonuses(Ticket tickets) {
+    public Collection<Bonus> getBonuses(Collection<Ticket> tickets) {
         return Arrays.asList(
-                new Bonus(1, "New year bonus"),
-                new Bonus(2, "Birthday bonus"),
-                new Bonus(3, "Random bonus")
+                new Bonus(1, "New year 10% bonus for tickets " + tickets),
+                new Bonus(2, "Birthday 15% bonus for tickets " + tickets),
+                new Bonus(3, "Random 5% bonus for tickets " + tickets)
         );
     }
 }

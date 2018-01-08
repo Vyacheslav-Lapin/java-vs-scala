@@ -10,7 +10,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -19,8 +18,30 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class JavaVsScalaApplicationTests {
 
-    public static final String JSON =
-            "{\"user\":{\"id\":1,\"firstName\":\"Vasya\",\"lastName\":\"Pupkin\",\"dateOfBirth\":\"1985-11-24\",\"emailAddress\":\"jkh%40ma.il\"},\"bonuses\":[{\"id\":1,\"description\":\"New year bonus\"},{\"id\":2,\"description\":\"Birthday bonus\"},{\"id\":3,\"description\":\"Random bonus\"}]}";
+    private static final String JSON =
+            "{\n" +
+                    "  \"user\": {\n" +
+                    "    \"id\": 1,\n" +
+                    "    \"firstName\": \"Vasya\",\n" +
+                    "    \"lastName\": \"Pupkin\",\n" +
+                    "    \"dateOfBirth\": \"1985-11-24\",\n" +
+                    "    \"emailAddress\": \"jkh%40ma.il\"\n" +
+                    "  },\n" +
+                    "  \"bonuses\": [\n" +
+                    "    {\n" +
+                    "      \"id\": 1,\n" +
+                    "      \"description\": \"New year 10% bonus for tickets [Ticket(id=101, description=It`s my first ticket!), Ticket(id=102, description=It`s my second ticket!)]\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"id\": 2,\n" +
+                    "      \"description\": \"Birthday 15% bonus for tickets [Ticket(id=101, description=It`s my first ticket!), Ticket(id=102, description=It`s my second ticket!)]\"\n" +
+                    "    },\n" +
+                    "    {\n" +
+                    "      \"id\": 3,\n" +
+                    "      \"description\": \"Random 5% bonus for tickets [Ticket(id=101, description=It`s my first ticket!), Ticket(id=102, description=It`s my second ticket!)]\"\n" +
+                    "    }\n" +
+                    "  ]\n" +
+                    "}";
 
     @Autowired
     private MockMvc mvc;
@@ -31,6 +52,6 @@ public class JavaVsScalaApplicationTests {
                 MockMvcRequestBuilders.get("/userData?emailAddress=jkh%40ma.il")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string(equalTo(JSON)));
+                .andExpect(content().json(JSON));
     }
 }
